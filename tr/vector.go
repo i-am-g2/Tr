@@ -30,6 +30,14 @@ func (v *Vector) SubVec(t *Vector) *Vector {
 	return &Vector{v.X - t.X, v.Y - t.Y, v.Z - t.Z}
 }
 
+func (v *Vector) SubTrip(x, y, z float64) *Vector {
+	return &Vector{v.X - x, v.Y - y, v.Z - z}
+}
+
+func (v *Vector) AddTrip(x, y, z float64) *Vector {
+	return &Vector{v.X + x, v.Y + y, v.Z + z}
+}
+
 func NewVector(x, y, z float64) *Vector {
 	return &Vector{x, y, z}
 }

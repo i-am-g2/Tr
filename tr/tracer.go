@@ -17,6 +17,6 @@ func RayColor(r *Ray, w *HittableList, depth int) *Vector {
 
 	unitDir := UnitVec(&r.Dir)
 	t := 0.5 * (unitDir.Y + 1.0)
-	temp := NewVector(1.0, 1.0, 1.0).ConstMult(1.0 - t).AddVec(NewVector(0.5, 0.7, 1.0).ConstMult(t))
+	temp := NewVector(1.0, 1.0, 1.0).ConstMult(1.0-t).AddTrip(0.5, 0.7, 1.0).ConstMult(t)
 	return temp
 }
