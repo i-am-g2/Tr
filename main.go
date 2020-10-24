@@ -2,31 +2,11 @@ package main
 
 import (
 	"fmt"
-	"math"
 	"math/rand"
 	"os"
 
 	. "github.com/i-am-g2/tr/tr"
 )
-
-func RayColor(r *Ray, w *HittableList, depth int) *Vector {
-	hit, rec := w.Hit(r, 0.001, math.Inf(0))
-	if depth <= 0 {
-		return NewVector(0, 0, 0)
-	}
-	if hit {
-		b, scatter, atten := rec.Mat.Scatter(r, rec)
-		if b {
-			return atten.Hamadard(RayColor(scatter, w, depth-1))
-		}
-		return NewVector(0, 0, 0)
-	}
-
-	unitDir := UnitVec(&r.Dir)
-	t := 0.5 * (unitDir.Y + 1.0)
-	temp := NewVector(1.0, 1.0, 1.0).ConstMult(1.0 - t).AddVec(NewVector(0.5, 0.7, 1.0).ConstMult(t))
-	return temp
-}
 
 func main() {
 	// Image
@@ -39,7 +19,7 @@ func main() {
 	apperture := 0.1
 	cam := InitCamera(lookFrom, lookAt, vup, AspectRatio, 20.0, apperture, dist)
 
-	imageWidth := 1200
+	imageWidth := 200
 	imageHeight := int(float64(imageWidth) / cam.AspectRatio)
 	samplePerPixel := 100
 	maxDepth := 50
