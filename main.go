@@ -39,7 +39,7 @@ func main() {
 	apperture := 0.1
 	cam := InitCamera(lookFrom, lookAt, vup, AspectRatio, 20.0, apperture, dist)
 
-	imageWidth := 200
+	imageWidth := 1200
 	imageHeight := int(float64(imageWidth) / cam.AspectRatio)
 	samplePerPixel := 100
 	maxDepth := 50
