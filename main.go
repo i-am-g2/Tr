@@ -5,19 +5,19 @@ import (
 	"math/rand"
 	"os"
 
-	. "github.com/i-am-g2/tr/tr"
+	"github.com/i-am-g2/tr/tr"
 )
 
 func main() {
 
 	// Setting up Camera Parameters
 	aspectRatio := 3.0 / 2.0
-	lookFrom := NewVector(13, 2, 3)
-	lookAt := NewVector(0, 0, 0)
-	vup := NewVector(0, 1, 0)
+	lookFrom := tr.NewVector(13, 2, 3)
+	lookAt := tr.NewVector(0, 0, 0)
+	vup := tr.NewVector(0, 1, 0)
 	dist := 10.0
 	apperture := 0.1
-	cam := InitCamera(lookFrom, lookAt, vup, aspectRatio, 20.0, apperture, dist)
+	cam := tr.InitCamera(lookFrom, lookAt, vup, aspectRatio, 20.0, apperture, dist)
 
 	// Setting Up Image Parameters
 	imageWidth := 200
@@ -26,7 +26,7 @@ func main() {
 	maxDepth := 50
 
 	// Creating Random Scene
-	var world HittableList
+	var world tr.HittableList
 	world = *randomScene()
 
 	// Headers for PPM File Format
@@ -36,64 +36,64 @@ func main() {
 
 	// Ray Tracing Start
 	for j := imageHeight - 1; j >= 0; j-- {
-		ProgressBar(imageHeight-j-1, imageHeight)
+		tr.ProgressBar(imageHeight-j-1, imageHeight)
 		for i := 0; i < imageWidth; i++ {
-			color := NewVector(0, 0, 0)
+			color := tr.NewVector(0, 0, 0)
 			for s := 0; s < samplePerPixel; s++ {
 				u := (float64(i) + rand.Float64()) / float64(imageWidth-1)
 				v := (float64(j) + rand.Float64()) / float64(imageHeight-1)
 
 				r := cam.GetRay(u, v)
-				color = color.AddVec(RayColor(r, &world, maxDepth))
+				color = color.AddVec(tr.RayColor(r, &world, maxDepth))
 			}
 			color.WriteColor(samplePerPixel)
 		}
 	}
 }
 
-func randomScene() *HittableList {
-	var world HittableList
-	groundMaterial := NewLambertian(NewVector(0.5, 0.5, 0.5))
+func randomScene() *tr.HittableList {
+	var world tr.HittableList
+	groundMaterial := tr.NewLambertian(tr.NewVector(0.5, 0.5, 0.5))
 
-	world.Add(NewSphere(NewVector(0, -1000, 0), 1000, groundMaterial))
+	world.Add(tr.NewSphere(tr.NewVector(0, -1000, 0), 1000, groundMaterial))
 
 	for a := -11; a < 11; a++ {
 		for b := -11; b < 11; b++ {
 			chooseMat := rand.Float64()
-			center := NewVector(float64(a)+0.9*rand.Float64(), 0.2, float64(b)+0.9*rand.Float64())
+			center := tr.NewVector(float64(a)+0.9*rand.Float64(), 0.2, float64(b)+0.9*rand.Float64())
 
-			if center.SubVec(NewVector(4, 0.2, 0)).LengthSquared() > 0.9*0.9 {
+			if center.SubVec(tr.NewVector(4, 0.2, 0)).LengthSquared() > 0.9*0.9 {
 
 				if chooseMat < 0.8 {
 
-					color := NewRandom(0, 1).Hamadard(NewRandom(0, 1))
-					mat := NewLambertian(color)
-					world.Add(NewSphere(center, 0.2, mat))
+					color := tr.NewRandom(0, 1).Hamadard(tr.NewRandom(0, 1))
+					mat := tr.NewLambertian(color)
+					world.Add(tr.NewSphere(center, 0.2, mat))
 
 				} else if chooseMat < 0.95 {
 
-					color := NewRandom(0, 0.5) // Random 3 dimensional vector with values between 0 to 0.5
-					fuzziness := RandomMinMax(0, 0.5)
-					mat := NewMetal(color, fuzziness)
-					world.Add(NewSphere(center, 0.2, mat))
+					color := tr.NewRandom(0, 0.5) // Random 3 dimensional vector with values between 0 to 0.5
+					fuzziness := tr.RandomMinMax(0, 0.5)
+					mat := tr.NewMetal(color, fuzziness)
+					world.Add(tr.NewSphere(center, 0.2, mat))
 
 				} else {
-					mat := NewDielectric(1.5)
-					world.Add(NewSphere(center, 0.2, mat))
+					mat := tr.NewDielectric(1.5)
+					world.Add(tr.NewSphere(center, 0.2, mat))
 				}
 
 			}
 
 		}
 	}
-	mat := NewDielectric(1.5)
-	world.Add(NewSphere(NewVector(0, 1, 0), 1.0, mat))
+	mat := tr.NewDielectric(1.5)
+	world.Add(tr.NewSphere(tr.NewVector(0, 1, 0), 1.0, mat))
 
-	mat2 := NewLambertian(NewVector(0.4, 0.2, 0.1))
-	world.Add(NewSphere(NewVector(-4, 1, 0), 1.0, mat2))
+	mat2 := tr.NewLambertian(tr.NewVector(0.4, 0.2, 0.1))
+	world.Add(tr.NewSphere(tr.NewVector(-4, 1, 0), 1.0, mat2))
 
-	mat3 := NewMetal(NewVector(0.7, 0.6, 0.5), 0.0)
-	world.Add(NewSphere(NewVector(4, 1, 0), 1.0, mat3))
+	mat3 := tr.NewMetal(tr.NewVector(0.7, 0.6, 0.5), 0.0)
+	world.Add(tr.NewSphere(tr.NewVector(4, 1, 0), 1.0, mat3))
 
 	return &world
 }
