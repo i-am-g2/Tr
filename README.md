@@ -17,7 +17,7 @@ go build -o Tracer
 ### Playing With Tracer
 
 Edit `main.go` to play around and generate different renders. 
-You can edit the camera parameters, add more objects (spheres) to the world or play with . I will be adding `docs` later.
+You may want to edit the camera parameters, add more objects (spheres) to the world or play with equations. I will be adding `docs` later.
 
 
 ## Objects
@@ -55,10 +55,10 @@ You can edit the camera parameters, add more objects (spheres) to the world or p
 |----------|-----------|
 |center| 3 dimensional vector denoting the center of spehere|
 |radius| float denotes radius|
-|material|`Metal`, `Lambertian` or `Dielectric`| 
+|material|`Metal`, `Lambertian` or `Dielectric`|
 
 ### Todos / Improvements
 
-- [ ] Use miltiple cpu cores while tracing.  
+- [x] Use miltiple cpu cores while tracing.  
 - [ ] Add documentation 
-- [ ] Add `.jpg` or `.png` support
+- [x] Add `.jpg` or `.png` support

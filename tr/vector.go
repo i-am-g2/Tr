@@ -2,6 +2,8 @@ package tr
 
 import (
 	"fmt"
+	"image"
+	"image/color"
 	"math"
 	"os"
 )
@@ -16,6 +18,16 @@ func (v *Vector) WriteColor(samplePerPixel int) {
 
 	fmt.Fprintln(os.Stdout, int(256*Clamp(math.Sqrt(v.X*scale), 0.0, 0.9999)), int(256*Clamp(math.Sqrt(v.Y*scale), 0.0, 0.9999)), int(256*Clamp(math.Sqrt(v.Z*scale), 0.0, 0.9999)))
 
+}
+
+func (v *Vector) SetColor(X, Y, samplePerPixel int, image *image.RGBA) {
+
+	scale := 1.0 / float64(samplePerPixel)
+	R := uint8(256 * Clamp(math.Sqrt(v.X*scale), 0.0, 0.9999))
+	G := uint8(256 * Clamp(math.Sqrt(v.Y*scale), 0.0, 0.9999))
+	B := uint8(256 * Clamp(math.Sqrt(v.Z*scale), 0.0, 0.9999))
+	color := color.RGBA{R, G, B, 255}
+	image.Set(X, image.Bounds().Dy()-Y-1, color)
 }
 
 func (v *Vector) ConstMult(t float64) *Vector {

@@ -1,9 +1,11 @@
 package main
 
 import (
-	"fmt"
+	"image"
+	"image/png"
 	"math/rand"
 	"os"
+	"sync"
 
 	"github.com/i-am-g2/tr/tr"
 )
@@ -20,35 +22,46 @@ func main() {
 	cam := tr.InitCamera(lookFrom, lookAt, vup, aspectRatio, 20.0, apperture, dist)
 
 	// Setting Up Image Parameters
-	imageWidth := 200
+	imageWidth := 1200
 	imageHeight := int(float64(imageWidth) / aspectRatio)
 	samplePerPixel := 100
 	maxDepth := 50
+	img := image.NewRGBA(image.Rectangle{image.Point{0, 0}, image.Point{imageWidth, imageHeight}})
 
 	// Creating Random Scene
 	var world tr.HittableList
 	world = *randomScene()
 
-	// Headers for PPM File Format
-	fmt.Fprintln(os.Stdout, "P3")
-	fmt.Fprintln(os.Stdout, imageWidth, imageHeight)
-	fmt.Fprintln(os.Stdout, "255")
-
 	// Ray Tracing Start
-	for j := imageHeight - 1; j >= 0; j-- {
-		tr.ProgressBar(imageHeight-j-1, imageHeight)
+	var wg sync.WaitGroup
+	for j := 0; j < imageHeight; j++ {
+		tr.ProgressBar(j, imageHeight)
 		for i := 0; i < imageWidth; i++ {
-			color := tr.NewVector(0, 0, 0)
-			for s := 0; s < samplePerPixel; s++ {
-				u := (float64(i) + rand.Float64()) / float64(imageWidth-1)
-				v := (float64(j) + rand.Float64()) / float64(imageHeight-1)
+			i, j := i, j
+			// This is Important, By default same instance of variable is used in loop. So while one go func capture
+			// the i,j and rendering,  the value of i,j is changed as loop proceeds
+			wg.Add(1)
+			go func() {
+				color := tr.NewVector(0, 0, 0)
+				for s := 0; s < samplePerPixel; s++ {
+					u := (float64(i) + rand.Float64()) / float64(imageWidth-1)
+					v := (float64(j) + rand.Float64()) / float64(imageHeight-1)
 
-				r := cam.GetRay(u, v)
-				color = color.AddVec(tr.RayColor(r, &world, maxDepth))
-			}
-			color.WriteColor(samplePerPixel)
+					r := cam.GetRay(u, v)
+					color = color.AddVec(tr.RayColor(r, &world, maxDepth))
+				}
+
+				color.SetColor(i, j, samplePerPixel, img)
+				wg.Done()
+			}()
 		}
+		wg.Wait()
 	}
+
+	pngFile, _ := os.Create("outputs/result.png")
+	png.Encode(pngFile, img)
+	pngFile.Close()
+
 }
 
 func randomScene() *tr.HittableList {
